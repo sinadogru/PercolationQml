@@ -8,20 +8,75 @@ import CSD.Percolation 1.0
 Item {
     property Percolation percolation
 
-    RandomGridSiteGenerator {
+    RandomComponentGenerator {
         id: rng
         gridSize: percolation.gridSize
     }
 
-    GridLayout {
+    PercolationStats {
+        id: stats
+    }
+
+    Connections {
+        target: percolation
+        onSiteOpened: ++__openComponentCounter;
+        onPercolated: stats.percolated(__openComponentCounter, __totalComponent);
+    }
+
+    ColumnLayout {
         id: layout
+        anchors.centerIn: parent
+        spacing: 15
 
         Button {
-            text: qsTr("Open a Site")
-            onClicked: percolation.open(rng.column, rng.row)
+            Layout.alignment: Qt.AlignCenter
+            text: qsTr("Open a Component")
+            enabled: !percolation.isPercolates
+            onClicked: {
+                var i;
+                var j;
+                do {
+                    i = rng.column;
+                    j = rng.row;
+                } while (percolation.isComponentOpen(i, j));
+                percolation.openComponent(i, j);
+//                percolation.openComponent(rng.column, rng.row);
+            }
         }
+        Frame {
+            Layout.alignment: Qt.AlignCenter
+            Label { text: __openComponentCounter + "/" + __totalComponent }
+        }
+        GroupBox {
+            Layout.alignment: Qt.AlignCenter
+            title: qsTr("Percolation Stats")
+            GridLayout {
+                columns: 2
+                Label { text: qsTr("Mean:"); Layout.alignment: Qt.AlignCenter }
+                Frame {
+                    Layout.alignment: Qt.AlignCenter
+                    Label { text: stats.mean }
+                }
+                Label { text: qsTr("Std Dev:"); Layout.alignment: Qt.AlignCenter }
+                Frame {
+                    Layout.alignment: Qt.AlignCenter
+                    Label { text: stats.stddev }
+                }
+                Button {
+                    Layout.columnSpan: 2
+                    Layout.alignment: Qt.AlignCenter
+                    text: qsTr("Reset Stats")
+                    onClicked: stats.resetStats();
+                }
+            }
+        }
+
         // TODO gridSize spinner
-        // TODO percolation results
+        // TODO percolation stats
         // TODO simulate switch
     }
+
+    property int __gridSize: percolation.gridSize
+    property int __openComponentCounter: 0
+    property int __totalComponent: __gridSize * __gridSize
 }
