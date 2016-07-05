@@ -8,13 +8,13 @@ SOURCES += main.cpp \
     percolationmodel.cpp \
     registerpercolation.cpp \
     weightedquickunionfind.cpp \
-    randomgridgenerator.cpp
+    randomgridsitegenerator.cpp
 
 HEADERS += percolation.h \
     percolationmodel.h \
     registerpercolation.h \
     weightedquickunionfind.h \
-    randomgridgenerator.h
+    randomgridsitegenerator.h
 
 RESOURCES += qml.qrc
 

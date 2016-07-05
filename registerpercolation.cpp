@@ -2,7 +2,7 @@
 #include "registerpercolation.h"
 #include "percolation.h"
 #include "percolationmodel.h"
-#include "randomgridgenerator.h"
+#include "randomgridsitegenerator.h"
 
 void registerPercolation(QQmlEngine *engine)
 {
@@ -12,7 +12,7 @@ void registerPercolation(QQmlEngine *engine)
 
     qmlRegisterType<Percolation>(uri, maj, min, "Percolation");
     qmlRegisterType<PercolationModel>(uri, maj, min, "PercolationModel");
-    qmlRegisterType<RandomGridGenerator>(uri, maj, min, "RandomGridGenerator");
+    qmlRegisterType<RandomGridSiteGenerator>(uri, maj, min, "RandomGridSiteGenerator");
 
     if (engine != Q_NULLPTR)
         engine->addImportPath("qrc:///");
