@@ -22,17 +22,32 @@ Window {
     }
 
 
-    PercolationView {
-        id: view
-        model: model
-        gridSize: root.gridSize
-        cellWidth: 80
-        cellHeight: 80
+    RowLayout {
         anchors.fill: parent
-    }
+        PercolationView {
+            id: view
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumWidth: 100
+            Layout.preferredWidth: 200
+            Layout.preferredHeight: 100
+            model: model
+            gridSize: root.gridSize
+            cellWidth: 80
+            cellHeight: 80
+//            anchors.fill: parent
+        }
 
-    PercolationController {
-        id: controller
-        percolation: perc
+        PercolationController {
+            id: controller
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumWidth: 50
+            Layout.preferredWidth: 100
+            Layout.maximumWidth: 300
+            Layout.minimumHeight: 150
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+            percolation: perc
+        }
     }
 }
