@@ -8,18 +8,20 @@ SOURCES += main.cpp \
     percolationmodel.cpp \
     registerpercolation.cpp \
     weightedquickunionfind.cpp \
-    randomgridsitegenerator.cpp
+    percolationstats.cpp \
+    randomcomponentgenerator.cpp
 
 HEADERS += percolation.h \
     percolationmodel.h \
     registerpercolation.h \
     weightedquickunionfind.h \
-    randomgridsitegenerator.h
+    percolationstats.h \
+    randomcomponentgenerator.h
 
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
+QML_IMPORT_PATH += $$PWD/imports
 
 # Default rules for deployment.
 include(deployment.pri)
