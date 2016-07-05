@@ -1,6 +1,6 @@
 #include "percolation.h"
 
-/*  if N = 5
+/*  if N == 5
  *      * -----> 0th component
  *  * * * * *    \
  *  * * * * *     |
@@ -38,31 +38,31 @@ Percolation::Percolation(QObject *parent)
 
 int Percolation::gridSize() const
 {
-    return m_N;
+    return static_cast<int>(m_N);
 }
 
 void Percolation::setGridSize(int gridSize)
 {
-    if (m_N == gridSize)
+    if (gridSize < 0 && m_N == static_cast<UF::size_type>(gridSize))
         return;
 
-    m_N = gridSize;
+    m_N = static_cast<UF::size_type>(gridSize);
     emit gridSizeChanged();
 
     resetPercolation();
-    initPercolation(static_cast<size_type>(gridSize));
+    initPercolation(static_cast<UF::size_type>(gridSize));
 }
 
 bool Percolation::percolates() const
 {
-    size_type virtualBottom{0};
-    size_type virtualTop{m_N * m_N + 1};
+    UF::size_type virtualBottom{0};
+    UF::size_type virtualTop{m_N * m_N + 1};
     return m_uf->connected(virtualBottom, virtualTop);
 }
 
 void Percolation::open(int i, int j)
 {
-    Adjacents adj{static_cast<size_type>(i), static_cast<size_type>(j), m_N};
+    Adjacents adj{static_cast<UF::size_type>(i), static_cast<UF::size_type>(j), m_N};
 
     if (m_openSites[adj.self])
         return;
@@ -95,7 +95,7 @@ bool Percolation::isFull(int i, int j) const
 
 void Percolation::resetPercolation()
 {
-    m_uf = nullptr;
+    m_uf.reset(nullptr);
     m_openSites.clear();
 }
 
@@ -156,4 +156,27 @@ Adjacents::Adjacents(Percolation::size_type i, Percolation::size_type j, Percola
         left = self;
     else
         left = self - 1;
+}
+
+Percolation::Position::Position(int index, int N)
+    : i{},
+      j{}
+{
+    if (!(index > 0 && N > 0))
+        qWarning() << "Percolation::Position::Position: index or N parameters must be greater then 0!";
+    else {
+        i = index % N == 0 ? N : index % N;
+        j = index % N == 0 ? index / N : index / N + 1;
+    }
+}
+
+Percolation::Index::Index(int i, int j, int N)
+    : idx{}
+{
+    if (!(i > 0 && j > 0 && N > 0))
+        qWarning() << "Percolation::Index::Index: i, j or N parameters must be greater then 0!";
+    else
+        idx = static_cast<int>(indexForPosition(static_cast<UF::size_type>(i),
+                                                static_cast<UF::size_type>(j),
+                                                static_cast<UF::size_type>(N)));
 }

@@ -6,7 +6,7 @@
 
 class Percolation;
 
-class PercolationModel : public QAbstractTableModel {
+class PercolationModel : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(Percolation *percolation READ percolation WRITE setPercolation NOTIFY percolationChanged)
 
@@ -22,7 +22,6 @@ public:
     void setPercolation(Percolation *percolation);
 
     int rowCount( const QModelIndex & parent = QModelIndex() ) const override;
-    int columnCount(const QModelIndex &parent) const override;
 
     QVariant data( const QModelIndex & index, int role = Qt::DisplayRole ) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;

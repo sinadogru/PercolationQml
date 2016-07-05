@@ -22,6 +22,16 @@ class Percolation : public QObject {
     using UF = WeightedQuickUnionFind;
 
 public:
+    struct Position {
+        int i;
+        int j;
+        Position(int index, int N);
+    };
+    struct Index {
+        int idx;
+        Index(int i, int j, int N);
+    };
+
     using size_type = UF::size_type;
 
     explicit Percolation(QObject *parent = nullptr);
@@ -32,6 +42,7 @@ public:
     bool percolates() const;
 
 public slots:
+
     void open(int i, int j);
     bool isOpen(int i, int j) const;
     bool isFull(int i, int j) const;

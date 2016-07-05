@@ -2,7 +2,7 @@
 #include "percolation.h"
 
 PercolationModel::PercolationModel()
-    : QAbstractTableModel(),
+    : QAbstractListModel(),
       m_percolation(nullptr)
 {
 }
@@ -14,7 +14,7 @@ Percolation *PercolationModel::percolation()
 
 void PercolationModel::setPercolation(Percolation *percolation)
 {
-    if (m_percolation == percolation || !percolation)
+    if (m_percolation == percolation)
         return;
 
     if (m_percolation)
@@ -25,18 +25,20 @@ void PercolationModel::setPercolation(Percolation *percolation)
     emit percolationChanged();
     endResetModel();
 
-    QObject::connect(m_percolation, &Percolation::gridSizeChanged, this, &PercolationModel::resetModel);
-    QObject::connect(m_percolation, &Percolation::siteOpened, this, &PercolationModel::onSiteOpened);
+    if (m_percolation) {
+        QObject::connect(m_percolation, &Percolation::gridSizeChanged, this, &PercolationModel::resetModel);
+        QObject::connect(m_percolation, &Percolation::siteOpened, this, &PercolationModel::onSiteOpened);
+    }
 }
 
 int PercolationModel::rowCount(const QModelIndex &parent) const
 {
-    return m_percolation ? m_percolation->gridSize() : 0;
-}
-
-int PercolationModel::columnCount(const QModelIndex &parent) const
-{
-    return m_percolation ? m_percolation->gridSize() : 0;
+    Q_UNUSED(parent);
+    if (m_percolation) {
+        int gridSize = m_percolation->gridSize();
+        return gridSize * gridSize;
+    }
+    return 0;
 }
 
 QVariant PercolationModel::data(const QModelIndex &index, int role) const
@@ -44,10 +46,11 @@ QVariant PercolationModel::data(const QModelIndex &index, int role) const
     if (!m_percolation)
         return QVariant();
 
+    const Percolation::Position position(index.row() + 1, m_percolation->gridSize());
     if (role == OpenRole)
-        return m_percolation->isOpen(index.row() + 1, index.column() + 1);
+        return m_percolation->isOpen(position.i, position.j);
     else if (role == FullRole)
-        return m_percolation->isFull(index.row() + 1, index.column() + 1);
+        return m_percolation->isFull(position.i, position.j);
     return QVariant();
 }
 
@@ -75,7 +78,7 @@ QHash<int, QByteArray> PercolationModel::roleNames() const
 
 Qt::ItemFlags PercolationModel::flags(const QModelIndex &index) const
 {
-    return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+    return QAbstractListModel::flags(index) | Qt::ItemIsEditable;
 }
 
 void PercolationModel::resetModel()
@@ -86,6 +89,9 @@ void PercolationModel::resetModel()
 
 void PercolationModel::onSiteOpened(int i, int j)
 {
-    QModelIndex idx = index(i - 1, j - 1);
-    emit dataChanged(idx, idx, {OpenRole});
+    if (m_percolation) {
+        const Percolation::Index idx(i, j, m_percolation->gridSize());
+        const QModelIndex siteIdx = index(idx.idx - 1);
+        emit dataChanged(siteIdx, siteIdx, {OpenRole});
+    }
 }
