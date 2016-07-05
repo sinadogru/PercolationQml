@@ -11,8 +11,7 @@ Item {
     property PercolationModel model
     property int gridSize: 0
 
-    // TODO encapsulate cellWidth and cellHeight. PercolationView can implicitly change cellHeight and cellWidth
-    // according to physical size and gridSize.
+    // TODO encapsulate cellWidth and cellHeight. PercolationView can implicitly change cellHeight and cellWidth according to physical size and gridSize.
 
     GridView {
         id: view
@@ -22,17 +21,29 @@ Item {
         interactive: false
         model: percolationView.model
 
-        delegate: Rectangle {
+        delegate: Item {
             id: delegate
             width: cellWidth
             height: cellHeight
-            color: open ?
-                       "blue"
-                     : index % 2 ?
-                           "black"
-                         : "white"
-            border.width: 1
-            border.color: "black"
+            Rectangle {
+                anchors.fill: parent
+                color: percolates?
+                           view.delegateColorAnimation
+                         : open ?
+                               "blue"
+                             : index % 2 ?
+                                   "black"
+                                 : "white"
+                border.width: 1
+                border.color: "black"
+            }
+        }
+
+        property color delegateColorAnimation
+        SequentialAnimation on delegateColorAnimation {
+            loops: Animation.Infinite
+            ColorAnimation { from: "blue"; to: "#33FFFF"; duration: 2000 }
+            ColorAnimation { from: "#33FFFF"; to: "blue"; duration: 2000 }
         }
     }
 }

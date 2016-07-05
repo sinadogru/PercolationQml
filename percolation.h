@@ -10,14 +10,14 @@
 /*!
  * \brief The Percolation class
  *
- * Corner cases.  By convention, the row and column indices i and j are
- * integers between 1 and N, where (1, 1) is the upper-left site.
+ * Corner cases. The row and column indices i and j are integers
+ * between 1 and N, where (1, 1) is the upper-left site.
  */
 
 class Percolation : public QObject {
     Q_OBJECT
     Q_PROPERTY(int gridSize READ gridSize WRITE setGridSize NOTIFY gridSizeChanged)
-    Q_PROPERTY(bool percolates READ percolates NOTIFY percolatesChanged)
+    Q_PROPERTY(bool isPercolates READ isPercolates NOTIFY percolated)
 
     using UF = WeightedQuickUnionFind;
 
@@ -26,6 +26,7 @@ public:
         int i;
         int j;
         Position(int index, int N);
+        Position() = default;
     };
     struct Index {
         int idx;
@@ -39,17 +40,17 @@ public:
     int gridSize() const;
     void setGridSize(int gridSize);
 
-    bool percolates() const;
+    bool isPercolates() const;
 
 public slots:
-
-    void open(int i, int j);
-    bool isOpen(int i, int j) const;
-    bool isFull(int i, int j) const;
+    void openComponent(int i, int j);
+    bool isComponentPercolates(int i, int j) const;
+    bool isComponentOpen(int i, int j) const;
+    bool isComponentFull(int i, int j) const;
 
 signals:
     void gridSizeChanged();
-    void percolatesChanged();
+    void percolated();
 
     void siteOpened(int i, int j);
 
@@ -58,10 +59,14 @@ private:
     void initPercolation(size_type N);
     void allocateUF(size_type N);
     void constructVirtualComponents();
+    void checkPercolation();
 
     std::unique_ptr<UF> m_uf;
     std::vector<bool> m_openSites;
     size_type m_N;
+    bool m_isPercolates : 1;
+    size_type m_virtualTop;
+    size_type m_virtualBottom;
 };
 
 QML_DECLARE_TYPE(Percolation)

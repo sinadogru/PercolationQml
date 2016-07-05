@@ -14,6 +14,7 @@ public:
     enum Roles {
         OpenRole = Qt::UserRole,
         FullRole,
+        PercolatesRole,
     };
 
     PercolationModel();
@@ -31,6 +32,7 @@ public:
 private slots:
     void resetModel();
     void onSiteOpened(int i, int j);
+    void onPercolated();
 
 signals:
     void percolationChanged();
