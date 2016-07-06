@@ -9,11 +9,9 @@ Window {
     width: 700
     height: 500
 
-    property int gridSize: 5
-
     Percolation {
         id: perc
-        gridSize: root.gridSize
+        gridSize: controller.gridSize
     }
 
     PercolationModel {
@@ -28,13 +26,14 @@ Window {
             id: view
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.margins: 30
             Layout.minimumWidth: 100
             Layout.preferredWidth: 200
             Layout.preferredHeight: 100
             model: model
-            gridSize: root.gridSize
-            cellWidth: 80
-            cellHeight: 80
+            gridSize: controller.gridSize
+//            cellWidth: 80
+//            cellHeight: 80
 //            anchors.fill: parent
         }
 
@@ -42,12 +41,14 @@ Window {
             id: controller
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.margins: 30
             Layout.minimumWidth: 50
             Layout.preferredWidth: 100
             Layout.maximumWidth: 300
             Layout.minimumHeight: 150
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+            Layout.alignment: Qt.AlignCenter
             percolation: perc
+
         }
     }
 }
