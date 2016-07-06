@@ -6,7 +6,9 @@ import CSD.Percolation 1.0
 /* PercolationController is a UI for Percolation
 */
 Item {
+    id: percolationController
     property Percolation percolation
+    property int gridSize: 5
 
     RandomComponentGenerator {
         id: rng
@@ -30,6 +32,7 @@ Item {
 
         Button {
             Layout.alignment: Qt.AlignCenter
+            Layout.fillWidth: true
             text: qsTr("Open a Component")
             enabled: !percolation.isPercolates
             onClicked: {
@@ -43,14 +46,44 @@ Item {
 //                percolation.openComponent(rng.column, rng.row);
             }
         }
-        Frame {
-            Layout.alignment: Qt.AlignCenter
-            Label { text: __openComponentCounter + "/" + __totalComponent }
-        }
         GroupBox {
             Layout.alignment: Qt.AlignCenter
+//            Layout.fillWidth: true
+            title: qsTr("Percolation")
+            GridLayout {
+                anchors.fill: parent
+                columns: 2
+                // TODO refactor label text
+                Label { text: qsTr("Opened"); Layout.alignment: Qt.AlignRight }
+                Frame {
+                    Layout.alignment: Qt.AlignCenter
+                    Label { text: __openComponentCounter + "/" + __totalComponent }
+                }
+                Label { text: qsTr("Grid Size") }
+                SpinBox {
+                    enabled: !__openComponentCounter && !percolation.isPercolates
+                    value: percolationController.gridSize
+                    onValueChanged: percolationController.gridSize = value;
+                }
+                Button {
+                    Layout.columnSpan: 2
+                    Layout.alignment: Qt.AlignCenter
+                    enabled: percolation.isPercolates
+                    text: qsTr("Reset Percolation")
+                    onClicked: {
+                        percolation.resetPercolation();
+                        __openComponentCounter = 0;
+                    }
+                }
+            }
+        }
+
+        GroupBox {
+            Layout.alignment: Qt.AlignCenter
+//            Layout.fillWidth: true
             title: qsTr("Percolation Stats")
             GridLayout {
+                anchors.fill: parent
                 columns: 2
                 Label { text: qsTr("Mean:"); Layout.alignment: Qt.AlignCenter }
                 Frame {
@@ -68,15 +101,13 @@ Item {
                     text: qsTr("Reset Stats")
                     onClicked: stats.resetStats();
                 }
+                // TODO percolation count
             }
         }
-
-        // TODO gridSize spinner
-        // TODO percolation stats
         // TODO simulate switch
     }
 
-    property int __gridSize: percolation.gridSize
+
     property int __openComponentCounter: 0
-    property int __totalComponent: __gridSize * __gridSize
+    property int __totalComponent: gridSize * gridSize
 }
