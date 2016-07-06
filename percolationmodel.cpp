@@ -1,6 +1,6 @@
 #include "percolationmodel.h"
 
-#include <QElapsedTimer>
+#include <QColor>
 
 #include "percolation.h"
 
@@ -54,13 +54,34 @@ QVariant PercolationModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    const Percolation::Position position(index.row() + 1, m_percolation->gridSize());
-    if (role == PercolatesRole)
+    const int idx = index.row();
+    if (idx < 0 || idx >= rowCount())
+        return QVariant();
+
+    const Percolation::Position position(idx + 1, m_percolation->gridSize());
+    switch (role) {
+    case PercolatesRole:
         return m_percolation->isComponentPercolates(position.i, position.j);
-    else if (role == OpenRole)
+    case ComponentColorRole: {
+        const int N = m_percolation->gridSize();
+        const int r = idx / N;
+        const int c = idx % N;
+        Qt::GlobalColor componentColor;
+        if (m_percolation->gridSize() % 2)
+            componentColor = idx % 2 ? Qt::white : Qt::lightGray;
+        else
+            componentColor = r % 2 ? (c % 2 ? Qt::white : Qt::lightGray)
+                                   : (c % 2 ? Qt::lightGray : Qt::white);
+        return QColor(componentColor);
+
+    }
+    case OpenRole:
         return m_percolation->isComponentOpen(position.i, position.j);
-    else if (role == FullRole)
+    case FullRole:
         return m_percolation->isComponentFull(position.i, position.j);
+    default:
+        break;
+    }
 
     return QVariant();
 }
@@ -85,6 +106,7 @@ QHash<int, QByteArray> PercolationModel::roleNames() const
     roleNames[OpenRole] = "open";
     roleNames[FullRole] = "full";
     roleNames[PercolatesRole] = "percolates";
+    roleNames[ComponentColorRole] = "componentColor";
     return roleNames;
 }
 

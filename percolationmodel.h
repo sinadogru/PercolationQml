@@ -15,6 +15,7 @@ public:
         OpenRole = Qt::UserRole,
         FullRole,
         PercolatesRole,
+        ComponentColorRole,
     };
 
     PercolationModel();

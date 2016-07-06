@@ -9,8 +9,17 @@ Item {
     property PercolationModel model
     property int gridSize: 0
 
+
     GridView {
         id: view
+        Rectangle {
+            width: parent.width + border.width * 2
+            height: parent.height + border.width * 2
+            anchors.centerIn: parent
+            border.width: 2
+            z: -1
+            border.color: "black"
+        }
         anchors.centerIn: parent
         implicitWidth: __shorterSideSize
         implicitHeight: __shorterSideSize
@@ -29,12 +38,7 @@ Item {
                            view.delegateColorAnimation
                          : open ?
                                "blue"
-                             : index % 2 ?
-                                   "black"
-                                 : "white"
-                // FIXME even number gridSize dama table is not accurately ordered
-                border.width: 1
-                border.color: "black"
+                             : componentColor
             }
         }
 
