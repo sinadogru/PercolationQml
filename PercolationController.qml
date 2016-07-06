@@ -1,6 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Layouts 1.1
-import Qt.labs.controls 1.0
+import QtQuick.Controls 2.0
 import CSD.Percolation 1.0
 
 /* PercolationController is a UI for Percolation
@@ -80,11 +80,16 @@ Item {
 
         GroupBox {
             Layout.alignment: Qt.AlignCenter
-//            Layout.fillWidth: true
+            Layout.fillWidth: true
             title: qsTr("Percolation Stats")
             GridLayout {
                 anchors.fill: parent
                 columns: 2
+                Label { text: qsTr("Try #:"); Layout.alignment: Qt.AlignCenter }
+                Frame {
+                    Layout.alignment: Qt.AlignCenter
+                    Label { text: stats.intervalCount }
+                }
                 Label { text: qsTr("Mean:"); Layout.alignment: Qt.AlignCenter }
                 Frame {
                     Layout.alignment: Qt.AlignCenter
@@ -101,7 +106,6 @@ Item {
                     text: qsTr("Reset Stats")
                     onClicked: stats.resetStats();
                 }
-                // TODO percolation count
             }
         }
         // TODO simulate switch

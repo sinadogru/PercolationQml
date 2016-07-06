@@ -20,9 +20,15 @@ qreal PercolationStats::stddev() const
     return m_stddev;
 }
 
+qint32 PercolationStats::intervalCount() const
+{
+    return m_stats.size() + 1;
+}
+
 void PercolationStats::percolated(qint32 numberOfOpenComponents, qint32 numberOfTotalComponents)
 {
     m_stats.push_back(static_cast<qreal>(numberOfOpenComponents) / numberOfTotalComponents);
+    emit intervalCountChanged();
     calculateStats();
 }
 
