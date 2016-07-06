@@ -32,6 +32,7 @@ void PercolationModel::setPercolation(Percolation *percolation)
         QObject::connect(m_percolation, &Percolation::gridSizeChanged, this, &PercolationModel::resetModel);
         QObject::connect(m_percolation, &Percolation::siteOpened, this, &PercolationModel::onSiteOpened);
         QObject::connect(m_percolation, &Percolation::percolated, this, &PercolationModel::onPercolated);
+        QObject::connect(m_percolation, &Percolation::percolationReseted, this, &PercolationModel::resetModel);
     }
 }
 
@@ -39,7 +40,7 @@ int PercolationModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     if (m_percolation) {
-        int gridSize = m_percolation->gridSize();
+        const int gridSize = m_percolation->gridSize();
         return gridSize * gridSize;
     }
     return 0;
@@ -50,13 +51,16 @@ QVariant PercolationModel::data(const QModelIndex &index, int role) const
     if (!m_percolation)
         return QVariant();
 
+    if (!index.isValid())
+        return QVariant();
+
     const Percolation::Position position(index.row() + 1, m_percolation->gridSize());
-    if (role == OpenRole)
+    if (role == PercolatesRole)
+        return m_percolation->isComponentPercolates(position.i, position.j);
+    else if (role == OpenRole)
         return m_percolation->isComponentOpen(position.i, position.j);
     else if (role == FullRole)
         return m_percolation->isComponentFull(position.i, position.j);
-    else if (role == PercolatesRole)
-        return m_percolation->isComponentPercolates(position.i, position.j);
 
     return QVariant();
 }
@@ -110,8 +114,5 @@ void PercolationModel::onSiteOpened(int i, int j)
 void PercolationModel::onPercolated()
 {
     // TODO optimization: check if updating the model elements one by one performance better then reseting the model
-    QElapsedTimer timer;
-    timer.start();
     resetModel();
-    qDebug() << "time elapsed on reseting the model is:" << timer.elapsed();
 }
