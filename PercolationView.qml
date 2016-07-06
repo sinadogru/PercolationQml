@@ -6,25 +6,23 @@ import CSD.Percolation 1.0
 Item {
     id: percolationView
 
-    property alias cellWidth: view.cellWidth
-    property alias cellHeight: view.cellHeight
     property PercolationModel model
     property int gridSize: 0
-
-    // TODO encapsulate cellWidth and cellHeight. PercolationView can implicitly change cellHeight and cellWidth according to physical size and gridSize.
 
     GridView {
         id: view
         anchors.centerIn: parent
-        implicitWidth: cellWidth * gridSize
-        implicitHeight: cellHeight * gridSize
+        implicitWidth: __shorterSideSize
+        implicitHeight: __shorterSideSize
+        cellHeight: __cellSize
+        cellWidth: __cellSize
         interactive: false
         model: percolationView.model
 
         delegate: Item {
             id: delegate
-            width: cellWidth
-            height: cellHeight
+            width: percolationView.__cellSize
+            height: percolationView.__cellSize
             Rectangle {
                 anchors.fill: parent
                 color: percolates?
@@ -34,6 +32,7 @@ Item {
                              : index % 2 ?
                                    "black"
                                  : "white"
+                // FIXME even number gridSize dama table is not accurately ordered
                 border.width: 1
                 border.color: "black"
             }
@@ -46,4 +45,7 @@ Item {
             ColorAnimation { from: "#33FFFF"; to: "blue"; duration: 2000 }
         }
     }
+
+    property real __shorterSideSize: Math.min(width, height)
+    property real __cellSize: __shorterSideSize / gridSize
 }
