@@ -30,33 +30,16 @@ Item {
         anchors.centerIn: parent
         spacing: 15
 
-        Button {
-            Layout.alignment: Qt.AlignCenter
-            Layout.fillWidth: true
-            text: qsTr("Open a Component")
-            enabled: !percolation.isPercolates
-            onClicked: {
-                var i;
-                var j;
-                do {
-                    i = rng.column;
-                    j = rng.row;
-                } while (percolation.isComponentOpen(i, j));
-                percolation.openComponent(i, j);
-//                percolation.openComponent(rng.column, rng.row);
-            }
-        }
+
         GroupBox {
             Layout.alignment: Qt.AlignCenter
-//            Layout.fillWidth: true
             title: qsTr("Percolation")
             GridLayout {
                 anchors.fill: parent
                 columns: 2
                 // TODO refactor label text
-                Label { text: qsTr("Opened"); Layout.alignment: Qt.AlignRight }
+                Label { text: qsTr("Opened");  }
                 Frame {
-                    Layout.alignment: Qt.AlignCenter
                     Label { text: __openComponentCounter + "/" + __totalComponent }
                 }
                 Label { text: qsTr("Grid Size") }
@@ -65,14 +48,29 @@ Item {
                     value: percolationController.gridSize
                     onValueChanged: percolationController.gridSize = value;
                 }
-                Button {
+                RowLayout {
                     Layout.columnSpan: 2
-                    Layout.alignment: Qt.AlignCenter
-                    enabled: percolation.isPercolates
-                    text: qsTr("Reset Percolation")
-                    onClicked: {
-                        percolation.resetPercolation();
-                        __openComponentCounter = 0;
+                    Layout.fillWidth: true
+                    Button {
+                        text: qsTr("Open a Component")
+                        enabled: !percolation.isPercolates
+                        onClicked: {
+                            var i;
+                            var j;
+                            do {
+                                i = rng.column;
+                                j = rng.row;
+                            } while (percolation.isComponentOpen(i, j));
+                            percolation.openComponent(i, j);
+                        }
+                    }
+                    Button {
+                        enabled: percolation.isPercolates
+                        text: qsTr("Reset Components")
+                        onClicked: {
+                            percolation.resetPercolation();
+                            __openComponentCounter = 0;
+                        }
                     }
                 }
             }
@@ -80,8 +78,7 @@ Item {
 
         GroupBox {
             Layout.alignment: Qt.AlignCenter
-            Layout.fillWidth: true
-            title: qsTr("Percolation Stats")
+            title: qsTr("Stats")
             GridLayout {
                 anchors.fill: parent
                 columns: 2

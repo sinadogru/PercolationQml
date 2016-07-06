@@ -6,8 +6,8 @@ import CSD.Percolation 1.0
 Window {
     id: root
     visible: true
-    width: 700
-    height: 500
+    minimumWidth: 760
+    minimumHeight: 470
 
     Percolation {
         id: perc
@@ -32,9 +32,6 @@ Window {
             Layout.preferredHeight: 100
             model: model
             gridSize: controller.gridSize
-//            cellWidth: 80
-//            cellHeight: 80
-//            anchors.fill: parent
         }
 
         PercolationController {

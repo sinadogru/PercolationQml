@@ -52,4 +52,5 @@ Item {
 
     property real __shorterSideSize: Math.min(width, height)
     property real __cellSize: __shorterSideSize / gridSize
+    // FIXME view fails on some gridSize sizes, for e.g. 31.
 }
