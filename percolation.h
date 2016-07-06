@@ -17,11 +17,10 @@
 class Percolation : public QObject {
     Q_OBJECT
     Q_PROPERTY(int gridSize READ gridSize WRITE setGridSize NOTIFY gridSizeChanged)
-    Q_PROPERTY(bool isPercolates READ isPercolates NOTIFY percolated)
-
-    using UF = WeightedQuickUnionFind;
+    Q_PROPERTY(bool isPercolates READ isPercolates NOTIFY isPercolatesChanged)
 
 public:
+    using UF = WeightedQuickUnionFind;
     struct Position {
         int i;
         int j;
@@ -33,9 +32,7 @@ public:
         Index(int i, int j, int N);
     };
 
-    using size_type = UF::size_type;
-
-    explicit Percolation(QObject *parent = nullptr);
+    explicit Percolation(QObject *parent = Q_NULLPTR);
 
     int gridSize() const;
     void setGridSize(int gridSize);
@@ -47,26 +44,29 @@ public slots:
     bool isComponentPercolates(int i, int j) const;
     bool isComponentOpen(int i, int j) const;
     bool isComponentFull(int i, int j) const;
+    void resetPercolation();
 
 signals:
     void gridSizeChanged();
+    void isPercolatesChanged();
     void percolated();
 
     void siteOpened(int i, int j);
+    void percolationReseted();
 
 private:
-    void resetPercolation();
-    void initPercolation(size_type N);
-    void allocateUF(size_type N);
-    void constructVirtualComponents();
-    void checkPercolation();
+    void clearPercolation();
+    void initPercolation(UF::size_type N);
+    void allocateUF(UF::size_type N);
+    void constructVirtualComponents(UF::size_type N);
+    void checkPercolates();
 
     std::unique_ptr<UF> m_uf;
     std::vector<bool> m_openSites;
-    size_type m_N;
+    UF::size_type m_N;
     bool m_isPercolates : 1;
-    size_type m_virtualTop;
-    size_type m_virtualBottom;
+    UF::size_type m_virtualTop;
+    UF::size_type m_virtualBottom;
 };
 
 QML_DECLARE_TYPE(Percolation)

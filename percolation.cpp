@@ -13,19 +13,19 @@
  */
 
 namespace {
-Percolation::size_type indexForPosition(Percolation::size_type i, Percolation::size_type j, Percolation::size_type N)
+Percolation::UF::size_type indexForPosition(Percolation::UF::size_type i, Percolation::UF::size_type j, Percolation::UF::size_type N)
 {
-    Percolation::size_type index = (j - 1) * N;
+    Percolation::UF::size_type index = (j - 1) * N;
     return index += i;
 }
 
 struct Adjacents {
-    Adjacents(Percolation::size_type i, Percolation::size_type j, Percolation::size_type N);
-    Percolation::size_type top;
-    Percolation::size_type right;
-    Percolation::size_type bottom;
-    Percolation::size_type left;
-    Percolation::size_type self;
+    Adjacents(Percolation::UF::size_type i, Percolation::UF::size_type j, Percolation::UF::size_type N);
+    Percolation::UF::size_type top;
+    Percolation::UF::size_type right;
+    Percolation::UF::size_type bottom;
+    Percolation::UF::size_type left;
+    Percolation::UF::size_type self;
 };
 }
 
@@ -33,8 +33,8 @@ Percolation::Percolation(QObject *parent)
     : QObject{parent},
       m_uf{},
       m_openSites{},
-      m_N{0},
-      m_isPercolates{false},
+      m_N{},
+      m_isPercolates{},
       m_virtualTop{},
       m_virtualBottom{}
 {
@@ -50,18 +50,16 @@ void Percolation::setGridSize(int gridSize)
     if (gridSize < 0 && m_N == static_cast<UF::size_type>(gridSize))
         return;
 
+    clearPercolation();
+    initPercolation(static_cast<UF::size_type>(gridSize));
+
     m_N = static_cast<UF::size_type>(gridSize);
     emit gridSizeChanged();
-
-    resetPercolation();
-    initPercolation(static_cast<UF::size_type>(gridSize));
 }
 
 bool Percolation::isPercolates() const
 {
-    UF::size_type virtualBottom{0};
-    UF::size_type virtualTop{m_N * m_N + 1};
-    return m_uf->connected(virtualBottom, virtualTop);
+    return m_isPercolates;
 }
 
 void Percolation::openComponent(int i, int j)
@@ -86,7 +84,7 @@ void Percolation::openComponent(int i, int j)
     m_openSites[adj.self] = true;
     emit siteOpened(i, j);
 
-    checkPercolation();
+    checkPercolates();
 }
 
 bool Percolation::isComponentPercolates(int i, int j) const
@@ -104,7 +102,7 @@ bool Percolation::isComponentPercolates(int i, int j) const
 
 bool Percolation::isComponentOpen(int i, int j) const
 {
-    return m_openSites[indexForPosition(static_cast<size_type>(i), static_cast<size_type>(j), m_N)];
+    return m_openSites[indexForPosition(static_cast<UF::size_type>(i), static_cast<UF::size_type>(j), m_N)];
 }
 
 bool Percolation::isComponentFull(int i, int j) const
@@ -114,11 +112,22 @@ bool Percolation::isComponentFull(int i, int j) const
 
 void Percolation::resetPercolation()
 {
+    clearPercolation();
+    initPercolation(m_N);
+
+    m_isPercolates = false;
+    emit isPercolatesChanged();
+
+    emit percolationReseted();
+}
+
+void Percolation::clearPercolation()
+{
     m_uf.reset(nullptr);
     m_openSites.clear();
 }
 
-void Percolation::initPercolation(size_type N)
+void Percolation::initPercolation(UF::size_type N)
 {
     Q_ASSERT_X(!m_uf && m_openSites.empty(), "Percolation::initPercolation",
                "The member variables must have been reset before calling this function!!");
@@ -126,40 +135,39 @@ void Percolation::initPercolation(size_type N)
     allocateUF(N);
     m_openSites.assign(N * N + 2, false);
 
-    constructVirtualComponents();
+    constructVirtualComponents(N);
 }
 
-void Percolation::allocateUF(Percolation::size_type N)
+void Percolation::allocateUF(UF::size_type N)
 {
     m_uf = std::make_unique<UF>(N * N + 2);
 }
 
-void Percolation::constructVirtualComponents()
+void Percolation::constructVirtualComponents(UF::size_type N)
 {
-    const size_type N = m_N;
-
     m_virtualTop = 0;
-    std::pair<size_type, size_type> firstRow{1, N + 1};
-    for (size_type i = firstRow.first; i < firstRow.second; ++i)
+    std::pair<UF::size_type, UF::size_type> firstRow{1, N + 1};
+    for (UF::size_type i = firstRow.first; i < firstRow.second; ++i)
         m_uf->make_union(m_virtualTop, i);
     m_openSites[m_virtualTop] = true;
 
     m_virtualBottom = N * N + 1;
-    std::pair<size_type, size_type> lastRow{N * (N - 1) + 1, N * N + 1};
-    for (size_type i = lastRow.first; i < lastRow.second; ++i)
+    std::pair<UF::size_type, UF::size_type> lastRow{N * (N - 1) + 1, N * N + 1};
+    for (UF::size_type i = lastRow.first; i < lastRow.second; ++i)
         m_uf->make_union(m_virtualBottom, i);
     m_openSites[m_virtualBottom] = true;
 }
 
-void Percolation::checkPercolation()
+void Percolation::checkPercolates()
 {
     if (!m_isPercolates && m_uf->connected(m_virtualBottom, m_virtualTop)) {
         m_isPercolates = true;
         emit percolated();
+        emit isPercolatesChanged();
     }
 }
 
-Adjacents::Adjacents(Percolation::size_type i, Percolation::size_type j, Percolation::size_type N)
+Adjacents::Adjacents(Percolation::UF::size_type i, Percolation::UF::size_type j, Percolation::UF::size_type N)
     : self(indexForPosition(i, j, N))
 {
     Q_ASSERT_X(i != 0 && j != 0, "Adjacents::Adjacents", "Zero index");
