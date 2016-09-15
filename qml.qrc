@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>PercolationView.qml</file>
         <file>PercolationController.qml</file>
+        <file>blank.qml</file>
     </qresource>
 </RCC>

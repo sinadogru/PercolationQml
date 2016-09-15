@@ -1,5 +1,8 @@
 #include "percolation.h"
 
+#include "percolationmanager.h"
+
+
 /*  if N == 5
  *      * -----> 0th component
  *  * * * * *    \
@@ -38,6 +41,19 @@ Percolation::Percolation(QObject *parent)
       m_virtualTop{},
       m_virtualBottom{}
 {
+    if (auto manager = PercolationManager::instance())
+    {
+        auto gridSize = static_cast<UF::size_type>(manager->gridSize());
+
+        initPercolation(gridSize);
+        m_N = gridSize;
+
+        auto openings = manager->openings();
+        for (const auto& e : openings)
+        {
+            openComponent(e.first, e.second);
+        }
+    }
 }
 
 int Percolation::gridSize() const
