@@ -9,14 +9,16 @@ SOURCES += main.cpp \
     registerpercolation.cpp \
     weightedquickunionfind.cpp \
     percolationstats.cpp \
-    randomcomponentgenerator.cpp
+    randomcomponentgenerator.cpp \
+    percolationmanager.cpp
 
 HEADERS += percolation.h \
     percolationmodel.h \
     registerpercolation.h \
     weightedquickunionfind.h \
     percolationstats.h \
-    randomcomponentgenerator.h
+    randomcomponentgenerator.h \
+    percolationmanager.h
 
 RESOURCES += qml.qrc
 
