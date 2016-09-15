@@ -41,8 +41,12 @@ Percolation::Percolation(QObject *parent)
       m_virtualTop{},
       m_virtualBottom{}
 {
+<<<<<<< HEAD
     auto manager = PercolationManager::instance();
     if (manager && manager->isActive())
+=======
+    if (auto manager = PercolationManager::instance())
+>>>>>>> 4650dcd4971844869c867c934a4b3258294f411f
     {
         auto gridSize = static_cast<UF::size_type>(manager->gridSize());
 
